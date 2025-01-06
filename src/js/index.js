@@ -4,13 +4,16 @@ import {createRoot} from 'react-dom/client'
 
 //include your index.scss file into the bundle
 import "../styles/index.css";
-
 //import your own components
 import Layout from './layout.js'
+import injectContext from './store/appContext.js';
 
 //
 const root = createRoot(document.querySelector("#app"))
 
 //render your react application
-root.render(<Layout/>)
+root.render(
+<injectContext>
+<Layout/>
+</injectContext>)
 

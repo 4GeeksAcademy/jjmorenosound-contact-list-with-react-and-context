@@ -1,3 +1,23 @@
 /* 
     General Styles
 */
+/* .image {
+    height: 150px;
+    width: 150px;
+} */
+
+.card {
+    justify-self: center;
+    height: 220px;
+    width: 540px;
+    margin: 20px;
+}
+
+.card img {
+    height: 220px;
+    object-fit: fill;
+}
+.fa {
+    margin-left: 10px;
+    margin-right: 10px;
+}
