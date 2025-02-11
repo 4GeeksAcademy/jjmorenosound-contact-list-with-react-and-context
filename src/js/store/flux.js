@@ -4,7 +4,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             contacts: []
         },
         actions: {
-         
+
             getContacts: () => {
                 fetch('https://playground.4geeks.com/contact/agendas/jjmorenosound')
                     .then(resp => resp.json())
@@ -16,7 +16,7 @@ const getState = ({ getStore, getActions, setStore }) => {
                     .catch(error => console.error("Error fetching contacts:", error));
             },
 
-        
+
             addContact: async (newContact) => {
                 try {
                     const response = await fetch(
@@ -42,23 +42,37 @@ const getState = ({ getStore, getActions, setStore }) => {
                 }
             },
 
-           
-            updateContact: (index, updatedContact) => {
+            updateContact: async (id, updatedContact) => {
                 const store = getStore();
+                try {
+                    const response = await fetch(`https://playground.4geeks.com/contact/agendas/jjmorenosound/contacts/${id}`, {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(updatedContact)
+                    });
+            
+                    if (!response.ok) {
+                        throw new Error(`Failed to update contact: ${response.status}`);
+                    }
 
+                    const updatedContactFromAPI = await response.json();
 
-                if (index >= 0 && index < store.contacts.length) {
-                    const updatedContacts = store.contacts.map((contact, i) =>
-                        i === index ? { ...contact, ...updatedContact } : contact
+                    const updatedContacts = store.contacts.map((contact) =>
+                        contact.id === updatedContactFromAPI.id ? { ...contact, ...updatedContactFromAPI } : contact
                     );
-
+            
+                    console.log("Updated contacts:", updatedContacts);
                     setStore({ contacts: updatedContacts });
-                } else {
-                    console.error("Invalid contact index:", index);
+            
+                } catch (error) {
+                    console.error("Error during PUT request:", error);
                 }
             },
-
-			deleteContact: async (id) => {
+            
+            
+            deleteContact: async (id) => {
                 try {
                     const response = await fetch(
                         `https://playground.4geeks.com/contact/agendas/jjmorenosound/contacts/${id}`,
@@ -66,10 +80,9 @@ const getState = ({ getStore, getActions, setStore }) => {
                             method: "DELETE",
                         }
                     );
-            
+
                     if (response.ok) {
                         console.log("Contact successfully deleted.");
-                        // Refresh the contact list
                         const actions = getActions();
                         actions.getContacts();
                     } else {
@@ -79,10 +92,10 @@ const getState = ({ getStore, getActions, setStore }) => {
                     console.error("Failed to delete contact:", error);
                 }
             }
-			
-			}
+
         }
-    };
+    }
+};
 
 
 export default getState;
